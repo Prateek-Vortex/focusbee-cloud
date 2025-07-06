@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from auth import router as auth_router
+import chat
 from sync import router as sync_router
 from database import engine, Base
 from focus import router as focus_router
@@ -13,3 +14,4 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(sync_router, prefix="/sync")
 app.include_router(focus_router, prefix="/focus")
+app.include_router(chat.router, prefix="/chat")

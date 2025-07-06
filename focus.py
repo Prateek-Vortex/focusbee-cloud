@@ -4,10 +4,11 @@ from fastapi import Depends
 from sync import get_current_user
 from database import get_db
 from models import User, SyncData
-from openai import OpenAI
+from openai import OpenAI, api_key
 from collections import Counter
 from fastapi import APIRouter, Depends
 
+ # Set your OpenAI API key here
 client = OpenAI()
 router = APIRouter()
 
