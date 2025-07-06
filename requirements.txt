@@ -5,4 +5,5 @@ passlib[bcrypt]
 python-jose
 pydantic[email]
 psycopg2-binary
-python-dotenv  # optional, if you're using .env
+python-dotenv
+openai

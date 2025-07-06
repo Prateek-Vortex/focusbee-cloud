@@ -1,0 +1,55 @@
+from datetime import date
+from sqlalchemy.orm import Session
+from fastapi import Depends
+from sync import get_current_user
+from database import get_db
+from models import User, SyncData
+from openai import OpenAI
+from collections import Counter
+from fastapi import APIRouter, Depends
+
+client = OpenAI()
+router = APIRouter()
+
+@router.get("/me/focus-summary")
+def focus_summary(
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    summary = generate_focus_summary(db, user)
+    return {"summary": summary}
+
+def generate_focus_summary(db: Session, user: User) -> str:
+    today = date.today()
+    logs = db.query(SyncData).filter(
+        SyncData.user_id == user.id,
+        SyncData.date == today
+    ).first()
+
+    if not logs:
+        return "No activity data found for today."
+
+    usage = logs.app_usage or {}
+    total_minutes = sum(usage.values())
+    idle_events = logs.reminders_sent  # reuse this field for now
+
+    top_apps = Counter(usage).most_common(3)
+    usage_summary = ", ".join(f"{app} ({mins} min)" for app, mins in top_apps)
+
+    prompt = f"""
+    Here's the user's productivity log:
+    - Total active minutes: {total_minutes}
+    - Reminders triggered (idle/breaks): {idle_events}
+    - Most used apps: {usage_summary}
+
+    Write a short 2-3 sentence natural language productivity summary. Include encouragement and one improvement suggestion.
+    """
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a friendly productivity assistant."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content.strip()
