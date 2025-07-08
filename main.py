@@ -5,8 +5,17 @@ from sync import router as sync_router
 from database import engine, Base
 from focus import router as focus_router
 from app_usage import router as app_usage_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace with specific origin(s) in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
