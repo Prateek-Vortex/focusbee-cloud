@@ -10,9 +10,12 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date as Date
+import os
+from dotenv import load_dotenv
 
- # Set your OpenAI API key here
-client = OpenAI()
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 router = APIRouter()
 
 @router.get("/me/focus-summary")

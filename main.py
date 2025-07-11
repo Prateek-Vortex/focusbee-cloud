@@ -26,3 +26,8 @@ app.include_router(sync_router, prefix="/sync")
 app.include_router(focus_router, prefix="/focus")
 app.include_router(chat.router, prefix="/chat")
 app.include_router(app_usage_router, prefix="/app-usage")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

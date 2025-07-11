@@ -7,8 +7,14 @@ from database import get_db
 from sync import get_current_user
 from models import User, SyncData
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-client = OpenAI() # Assuming you use OpenAI API
+load_dotenv()
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+#client = OpenAI() # Assuming you use OpenAI API
 router = APIRouter()
 
 class ChatRequest(BaseModel):
